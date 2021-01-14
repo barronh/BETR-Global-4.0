@@ -325,7 +325,7 @@ class Model():
                 write_bigDlist_txt(self.bigDlist, fn2, fn3,fn4,fn5,self) #FY                
                 print('wrote D-value - matrices to %s\n') % (fn2)
                 print('wrote D-value - matrices to %s\n') % (fn3)
-		print('wrote D-value - matrices to %s\n') % (fn4)
+                print('wrote D-value - matrices to %s\n') % (fn4)
                 print('wrote D-value - matrices to %s\n') % (fn5)
                 # end of modification
 

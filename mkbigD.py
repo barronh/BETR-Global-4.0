@@ -267,7 +267,7 @@ def mkbigD(m, track_flows=False ,use_correction=False):
         if m.shape != matshp:
             print("mkbigD: inconsistent matrix dimensions. Aborting!\n")
             sys.exit(1)
-	
+
     # add matrices for intercell transport  and intracell processes 
     matlist=[]; outbigD=[]
     if use_correction==True:
@@ -277,7 +277,7 @@ def mkbigD(m, track_flows=False ,use_correction=False):
         outbigD.append(matlist_flow[ts]+matlist_proc[ts])
         if use_correction==True:
            matlist_Q.append(matlist_flow_Q[ts]+matlist_proc_Q[ts])
-	
+
     # construct proper diagonals
     for ts in arange(0,len(matlist)):
         # seperate matrices from their diagonals        

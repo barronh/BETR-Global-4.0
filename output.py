@@ -16,7 +16,7 @@ import pdb
 #try:
 from write_ncfile import *
 #except ImportError:
-#	from write_ncfile_old import *
+#   from write_ncfile_old import *
 
 from helpers import *
 from helpers3 import *
@@ -151,7 +151,7 @@ def write_output_dyn(m, fn, units, netcdf, cpk):     # parameter cpk added by HW
             out[c]['mol_per_m3']=m.dyn_res[idx]/varr
             out[c]['mol_per_m3'][zerovolidx]=0
         if 'kg_per_m3' in units:
-	    out[c]['kg_per_m3']=m.dyn_res[idx]*m.chemdict['molmass']/1000.0/varr
+            out[c]['kg_per_m3']=m.dyn_res[idx]*m.chemdict['molmass']/1000.0/varr
             out[c]['kg_per_m3'][zerovolidx]=0
         if  'ng_per_m3' in units:            
             out[c]['ng_per_m3']=m.dyn_res[idx]*m.chemdict['molmass']*1e9/varr  
