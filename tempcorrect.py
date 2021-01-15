@@ -31,7 +31,7 @@ def tempcorrect(par, compdict, chem):
     ##       then perfect persistence would be much easier to implement
 
     chem_spatial_dict={}
-    for k in compdict.keys():
+    for k in list(compdict.keys()):
         ## initialize record-array
         pa=zeros(par.shape, dtype=dtype([('k_reac','f8'), ('Kaw','f8'),
                                               ('Koa','f8'),('Kow','f8')]))
@@ -55,14 +55,14 @@ def tempcorrect(par, compdict, chem):
     ## weight degradation in air according to OH-radical concentration
     ## ATT : This special treatment of air1 and air2 should be generalized
     ## somehow.
-    if 1 in chem_spatial_dict.keys():
+    if 1 in list(chem_spatial_dict.keys()):
         chem_spatial_dict[1]['k_reac']*=par['OHair1'] # upper air
-    if 2 in chem_spatial_dict.keys():
+    if 2 in list(chem_spatial_dict.keys()):
         chem_spatial_dict[2]['k_reac']*=par['OHair2'] # lower air
-    if 8 in chem_spatial_dict.keys():
+    if 8 in list(chem_spatial_dict.keys()):
         chem_spatial_dict[8]['k_reac']*=par['OHair1'] # upper air coarse aerosol
-    if 9 in chem_spatial_dict.keys():
+    if 9 in list(chem_spatial_dict.keys()):
         chem_spatial_dict[9]['k_reac']*=par['OHair2'] # lower air fine aerosol 
-    if 10 in chem_spatial_dict.keys():
+    if 10 in list(chem_spatial_dict.keys()):
         chem_spatial_dict[10]['k_reac']*=par['OHair2'] # lower air coarse aerosol
     return(chem_spatial_dict)

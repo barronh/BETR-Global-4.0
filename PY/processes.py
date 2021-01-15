@@ -39,8 +39,8 @@ class process():
             try:
                 getattr(self,p)
             except AttributeError:
-                print("processes.py: "
-                      +"Method %s not implemented !\n Aborting!") % (p)
+                print(("processes.py: "
+                      +"Method %s not implemented !\n Aborting!") % (p))
                 sys.exit(1)
 
     def getD(self):
@@ -55,7 +55,7 @@ class process():
         # don't change this
         D={}
         procname=inspect.getframeinfo(inspect.currentframe())[2]
-        for c in self.m.compdict.keys():
+        for c in list(self.m.compdict.keys()):
             D[(c,c,procname)]=self.m.chempardict[c]['k_reac']\
                                  *self.m.vdict[c]['bulk']\
                                  *self.m.zdict[c]['bulk']
@@ -507,13 +507,13 @@ class process():
                            *(self.m.par['fcp1']/vp)*self.m.vdict[1]['bulk']\
                            *self.m.zdict[1]['bulk']
         D[(1,8,procname)]=td
-	D[(8,1,procname)]=D[(1,8,procname)]
-	'''
+        D[(8,1,procname)]=D[(1,8,procname)]
+        '''
         time=1e-1
         td=minimum(td,self.m.vdict[1]['bulk']*self.m.zdict[1]['bulk']/time)
         D[(1,8,procname)]=minimum(td,self.m.vdict[8]['bulk']*self.m.zdict[8]['bulk']/time)
         D[(8,1,procname)]=D[(1,8,procname)]
-	'''
+        '''
         return(D)
 
     def betr_air2_faerosol2_exchange(self):
@@ -535,13 +535,13 @@ class process():
                            *(self.m.par['ffp2']/vp)*self.m.vdict[2]['bulk']\
                            *self.m.zdict[2]['bulk']
         D[(2,9,procname)]=td
-	D[(9,2,procname)]=D[(2,9,procname)]
-	'''  
+        D[(9,2,procname)]=D[(2,9,procname)]
+        '''  
         time=1e-1
         td=minimum(td,self.m.vdict[2]['bulk']*self.m.zdict[2]['bulk']/time)
         D[(2,9,procname)]=minimum(td,self.m.vdict[9]['bulk']*self.m.zdict[9]['bulk']/time)
         D[(9,2,procname)]=D[(2,9,procname)]
-	'''
+        '''
         return(D)
 
     def betr_air2_caerosol2_exchange(self):
@@ -560,13 +560,13 @@ class process():
                            *(self.m.par['fcp2']/vp)*self.m.vdict[2]['bulk']\
                            *self.m.zdict[2]['bulk']
         D[(2,10,procname)]=td
-	D[(10,2,procname)]=D[(2,10,procname)]
-	'''
+        D[(10,2,procname)]=D[(2,10,procname)]
+        '''
         time=1e-1
         td=minimum(td,self.m.vdict[2]['bulk']*self.m.zdict[2]['bulk']/time)
         D[(2,10,procname)]=minimum(td,self.m.vdict[10]['bulk']*self.m.zdict[10]['bulk']/time)
         D[(10,2,procname)]=D[(2,10,procname)]
-	'''
+        '''
         return(D)
     
     def betr_caerosol1_drydep(self):

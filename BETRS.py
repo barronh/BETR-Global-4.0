@@ -23,8 +23,9 @@
 from numpy import *
 import sys
 import pdb
-import cPickle
+import pickle
 import os
+import importlib
 
 
 
@@ -52,21 +53,21 @@ import helpers
 import solver
 import output
 import modifyparams
-reload(readinput)
-reload(globalz)
-reload(zvalues)
-reload(tempcorrect)
-reload(volumes)
-reload(processes)
-reload(mkflowD)
-reload(mkflowDQ)
-reload(mkDmixQ)
-reload(mkbigD)
-reload(emissions)
-reload(helpers)
-reload(solver)
-reload(output)
-reload(modifyparams)
+importlib.reload(readinput)
+importlib.reload(globalz)
+importlib.reload(zvalues)
+importlib.reload(tempcorrect)
+importlib.reload(volumes)
+importlib.reload(processes)
+importlib.reload(mkflowD)
+importlib.reload(mkflowDQ)
+importlib.reload(mkDmixQ)
+importlib.reload(mkbigD)
+importlib.reload(emissions)
+importlib.reload(helpers)
+importlib.reload(solver)
+importlib.reload(output)
+importlib.reload(modifyparams)
 from readinput import *
 from globalz import *
 from zvalues import *
@@ -196,7 +197,7 @@ class Model():
     def update_compartments(self, compfile):
         self.compdict = readCompartments(compfile)
     def update_flows(self, flowdir, mean=False):
-        self.flowdict = readFlows(self.compdict.keys(),flowdir)
+        self.flowdict = readFlows(list(self.compdict.keys()),flowdir)
     def update_processlist(self, processfile):
         self.proclist = readProcesses(self.compdict, processfile)
     def update_control(self, controlfile):
@@ -274,7 +275,7 @@ class Model():
         #Calculating system-matrix indices indicating
         #zero-volume compartments; setting self.killidx
         killidx=[]
-        for c in self.compdict.keys():
+        for c in list(self.compdict.keys()):
             zerovols=where(sum(self.vdict[c]['bulk'], axis=1)==0)[0]
             killidx.extend(tocell(zerovols+1,c,self))
         self.killidx=sort(array(killidx))
@@ -306,11 +307,11 @@ class Model():
                 os.mkdir(os.path.dirname(fn))
             else:
                 if os.path.exists(fn):
-                    print('Attention: overwriting %s\n') % (fn)
+                    print(('Attention: overwriting %s\n') % (fn))
             of=open(fn,'w')
-            cPickle.dump(self.bigDlist,of,protocol=2)
+            pickle.dump(self.bigDlist,of,protocol=2)
             of.close()
-            print('wrote D-value - matrices to %s\n') % (fn)
+            print(('wrote D-value - matrices to %s\n') % (fn))
         if self.controldict['dumpDmatricesTxt'] in ['1','y','Y','yes','Yes','YES']:   # txt-output added by HW, 15.01.2011
             fn2=os.path.join('Output', self.run, 'matrixdump.txt')
             fn3=os.path.join('Output', self.run, 'matrixtime.txt')   #FY
@@ -320,19 +321,19 @@ class Model():
                 os.mkdir(os.path.dirname(fn2))
             else:
                 if os.path.exists(fn2):
-                    print('Attention: overwriting %s\n') % (fn2)
+                    print(('Attention: overwriting %s\n') % (fn2))
             if (not track_flows):
                 write_bigDlist_txt(self.bigDlist, fn2, fn3,fn4,fn5,self) #FY                
-                print('wrote D-value - matrices to %s\n') % (fn2)
-                print('wrote D-value - matrices to %s\n') % (fn3)
-                print('wrote D-value - matrices to %s\n') % (fn4)
-                print('wrote D-value - matrices to %s\n') % (fn5)
+                print(('wrote D-value - matrices to %s\n') % (fn2))
+                print(('wrote D-value - matrices to %s\n') % (fn3))
+                print(('wrote D-value - matrices to %s\n') % (fn4))
+                print(('wrote D-value - matrices to %s\n') % (fn5))
                 # end of modification
 
         
         ## consistency check for killidx
 
-        print('Consistency check of zero-volume compartments: '),
+        print(('Consistency check of zero-volume compartments: '), end=' ')
         kidx=self.mkkillidx_fromD()
         if track_flows:
            killidx_double = concatenate(\
@@ -396,12 +397,21 @@ class Model():
         get a time invariant system. Solves for the steady-state.
         '''
         ## average D-value matrices
-        self.Davg = mean(self.bigDlist)
+        # Removing:
+        #  self.Davg = mean(self.bigDlist)
+        # Note: numpy average of a list of scipy.csr_matrix items
+        # is unreliable. Replacing with intended outcome.
+        #
+        dls = 0
+        for dl in self.bigDlist:
+          dls = dls + dl
+        dlm = dls / len(self.bigDlist)
+        self.Davg = dlm
         try:
             q=self.emission.get_emission(0,self,type='array')
         except AttributeError:
-            print("update_emissions(<filename>) has to be called before\n"\
-                  +"solving for steady-state. Did nothing!\n")
+            print(("update_emissions(<filename>) has to be called before\n"\
+                  +"solving for steady-state. Did nothing!\n"))
             return()
         ss_res =dot(-inv(self.Davg.toarray()), q)
         self.ss_res=expandvec(ss_res, self.killidx)
@@ -425,8 +435,8 @@ class Model():
         try:
             q=self.emission.get_emission(0,self,type='array')
         except AttributeError:
-            print("update_emissions(<filename>) has to be called before\n"\
-                  +"solving for steady-state. Did nothing!\n")
+            print(("update_emissions(<filename>) has to be called before\n"\
+                  +"solving for steady-state. Did nothing!\n"))
             return()
         ss_res =dot(-inv(self.Davg.toarray()), q) # self.Davg is already an array now, RKG, 24.07.2014
         #ss_res =dot(-inv(self.Davg), q) # line added by RKG, 27.04.2014
@@ -470,7 +480,7 @@ class Model():
         
         for i in range ( len(self.flux_res)): #SSchenker Linear Flux Approx. 
             #print "data processing flux from season %i" % i
-            print("data processing flux from season %i" % i) # modification to run with python 3, RKG, 10.06.2014 RKG 
+            print(("data processing flux from season %i" % i)) # modification to run with python 3, RKG, 10.06.2014 RKG 
             self.flux_res[i] = self.flux_res[i].tolil()
             
             
@@ -585,8 +595,8 @@ class Model():
         try:
             avgmatrix=expandmatrix(self.Davg, self.killidx).toarray()
         except AttributeError:
-            print("solve_ss() has to be called before acessing the averaged"\
-                  +" system matrix.")
+            print(("solve_ss() has to be called before acessing the averaged"\
+                  +" system matrix."))
             return()
         print("OK")
         return(avgmatrix)
@@ -599,8 +609,8 @@ class Model():
         try:
             ssem=self.emission.get_emission(0,self,'array')
         except AttributeError:
-            print("update_emissions(<filename>) has to be called before"\
-                  +" acessing the emission vector. Did nothing!")
+            print(("update_emissions(<filename>) has to be called before"\
+                  +" acessing the emission vector. Did nothing!"))
             return()
         print("Expanding emission vector ...")
         ssem=expandvec(ssem, self.killidx)
@@ -614,7 +624,7 @@ class Model():
             self.parmean[field]=mean(self.par[field], axis=1)
     def average_flows(self):
         self.flowdictmean={}
-        for item in self.flowdict.items():
+        for item in list(self.flowdict.items()):
             meanmat=c_[item[1][:,0:2], mean(item[1][:,2:], axis=1)]
             self.flowdictmean[item[0]]=meanmat
 

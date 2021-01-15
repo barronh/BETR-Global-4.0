@@ -2,7 +2,8 @@
 import os
 import time
 import BETRS
-reload(BETRS)
+import importlib
+importlib.reload(BETRS)
 from BETRS import *
 import pdb
 
@@ -31,7 +32,7 @@ dname = os.path.dirname(abspath)
 os.chdir(dname)
 
 runID = ['TCPP_ss_br'] # output names 
-years = [range(1)]*len(runID)    # range of modeling run (years)
+years = [list(range(1))]*len(runID)    # range of modeling run (years)
 
 #emisdir = ['Emission_BDE209_10_comparts']  # emission inventory ('Emissions/annual/')
 emisfile = ['Emission_TCPP_10_comparts.txt']*len(runID) # emission inventory ('Emissions/')
@@ -57,9 +58,9 @@ for v in [emisfile, seasparfile, chemdata, chemnr, constparfile, compfile, flowd
 ## now run the model
 
 for i in range(0, len(runID)):
-    print('\n\nStarting run ' + runID[i])
+    print(('\n\nStarting run ' + runID[i]))
     ## model first year and write temporary result to text file
-    print('\n\nBETR run ' + runID[i] + ' for year ' + str(years[i][0]))
+    print(('\n\nBETR run ' + runID[i] + ' for year ' + str(years[i][0])))
     m=Model(chemical = chemnr[i],
             run = runID[i],
             chemdb = chemdata[i],
@@ -91,7 +92,7 @@ for i in range(0, len(runID)):
 
     t_e = time.time() # End time
 
-    print 'Simulation completed!'
-    print 'TOTAL SIMULATION TIME: %f minutes' % ((t_e - t_s) / 60.0)
+    print('Simulation completed!')
+    print('TOTAL SIMULATION TIME: %f minutes' % ((t_e - t_s) / 60.0))
 
     

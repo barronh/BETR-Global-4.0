@@ -94,9 +94,9 @@ def reconstruct_dyn_res(m, scenario="air",nseasons=12):
         x,y = fluxmat.nonzero()
         
         if season ==0:
-            print ("\nProcessing year %i \t" %(year)),
+            print(("\nProcessing year %i \t" %(year)), end=' ')
         
-        print ".",
+        print(".", end=' ')
         
         ''' For loop through compartment and treat in fluxes first '''
         for i in range(len(x)):
@@ -113,11 +113,11 @@ def reconstruct_dyn_res(m, scenario="air",nseasons=12):
                 try :
                     match_dict = m.flux_key[season][xcell][xcomp]
                 except KeyError:
-                    print [[season],[xcell],[xcomp]]
+                    print([[season],[xcell],[xcomp]])
                 
                 minus_mass[ind_from] -= value
                 
-                for mnkey in match_dict.keys():
+                for mnkey in list(match_dict.keys()):
                      
                     '''Flow to and from neighboring cells'''
                     if type(mnkey) is tuple:
@@ -135,7 +135,7 @@ def reconstruct_dyn_res(m, scenario="air",nseasons=12):
                                 value * \
                                 (org_frac_se[ind_from])
                         except IndexError:
-                            print mnkey[1], (mnkey[1]-1)*m.nocomp+xcomp, ind_from
+                            print(mnkey[1], (mnkey[1]-1)*m.nocomp+xcomp, ind_from)
                             raise IndexError
 #                    if mnkey  == "deg":
 #                        minus_mass[ind_from] -= flux_key[season][xcell][xcomp][mnkey] * value

@@ -25,11 +25,11 @@ def mkDmixQ(m):
     Qmix=zeros((2,cells,seasons))
 
     ''' uses zdict and vdict to construct vz'''
-    for c in m.compdict.keys():
+    for c in list(m.compdict.keys()):
         vz[c-1]=m.zdict[c]['bulk']*m.vdict[c]['bulk']
         
     '''T in mixing process'''        
-    for [k,v] in m.Dproc.items():
+    for [k,v] in list(m.Dproc.items()):
         key=k[0]-1
         mstring = k[2]
         if re.search("mix", mstring): 
@@ -37,7 +37,7 @@ def mkDmixQ(m):
            if key==1: T[1]=m.par['h2']/m.par['mixing21']
 
     '''Kloss'''  
-    for [k,v] in m.Dproc.items():
+    for [k,v] in list(m.Dproc.items()):
         key=k[0]-1
         mstring = k[2]
         if re.search("deg|wet|disso", mstring): 

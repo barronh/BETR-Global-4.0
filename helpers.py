@@ -92,7 +92,7 @@ def tocell(reg,comp,m):
 def calQ(comp,cell,m):
     dk=zeros((2,m.nocells,12))
     x=zeros(12)
-    for [k,v] in m.Dproc.items():
+    for [k,v] in list(m.Dproc.items()):
         key=k[0]-1
         mstring = k[2]
         if re.search("deg|wet|disso", mstring): 

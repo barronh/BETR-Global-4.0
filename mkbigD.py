@@ -30,12 +30,12 @@ import os
 def mkprocmat(m):
     ''' returns a list of sparse matrices, one for each timestep, that
     contain D-values for intra-cell processes'''  
-    for tp in m.Dproc.keys(): # check whether we have all compartments
+    for tp in list(m.Dproc.keys()): # check whether we have all compartments
         tp=(tp[0],tp[1])
         for c in tp:
-            if c not in m.compdict.keys():
-                print('''mkprocmat.py: Compartment %i not in compartment-list.
-                Aborting !''') % (c)
+            if c not in list(m.compdict.keys()):
+                print(('''mkprocmat.py: Compartment %i not in compartment-list.
+                Aborting !''') % (c))
                 sys.exit(1)
     # construct list of large sparse matrices
     matlist=[]
@@ -46,7 +46,7 @@ def mkprocmat(m):
     for t in arange(0,m.nots):
         matlist.append(sp.coo_matrix(matrix(zeros((m.matdim,m.matdim),
                                                   dtype=float32))))    #original: float64 
-    for [k,v] in m.Dproc.items():
+    for [k,v] in list(m.Dproc.items()):
         toidx=array([x*m.nocomp+k[1]-1 for x in range(0,m.nocells)])
         fromidx=array([x*m.nocomp+k[0]-1 for x in range(0,m.nocells)])
         ij=(toidx.astype(int),fromidx.astype(int))
@@ -64,15 +64,15 @@ def mkprocmatQ(m):
     
     pdict=copy.deepcopy(m.Dproc)  
     mixQ=copy.deepcopy(m.DmixQ)
-    for tp in pdict.keys(): # check whether we have all compartments
+    for tp in list(pdict.keys()): # check whether we have all compartments
         tp=(tp[0],tp[1])
         for c in tp:
-            if c not in m.compdict.keys():
-                print('''mkprocmat.py: Compartment %i not in compartment-list.
-                Aborting !''') % (c)
+            if c not in list(m.compdict.keys()):
+                print(('''mkprocmat.py: Compartment %i not in compartment-list.
+                Aborting !''') % (c))
                 sys.exit(1)
 
-    for [k,v] in pdict.items():
+    for [k,v] in list(pdict.items()):
         key=k[0]-1
         mstring = k[2]
         if re.search("mix", mstring): 
@@ -84,7 +84,7 @@ def mkprocmatQ(m):
     for t in arange(0,m.nots):
         matlist.append(sp.coo_matrix(matrix(zeros((m.matdim,m.matdim),
                                                   dtype=float32))))   #original: float64 
-    for [k,v] in pdict.items():
+    for [k,v] in list(pdict.items()):
         toidx=array([x*m.nocomp+k[1]-1 for x in range(0,m.nocells)])
         fromidx=array([x*m.nocomp+k[0]-1 for x in range(0,m.nocells)])
         ij=(toidx.astype(int),fromidx.astype(int))
@@ -102,16 +102,16 @@ def mkflowQ(m):
     
     fdict=copy.deepcopy(m.Dflow)
     Qdict=copy.deepcopy(m.DflowQ)      #04.10.2016   fy
-    for tp in fdict.keys(): # check whether we have all compartments
+    for tp in list(fdict.keys()): # check whether we have all compartments
         for c in tp:
-            if c not in m.compdict.keys():
-                print('''flows.py: Compartment %i not in compartment-list.
-                Aborting !''') % (c)
+            if c not in list(m.compdict.keys()):
+                print(('''flows.py: Compartment %i not in compartment-list.
+                Aborting !''') % (c))
                 sys.exit(1)
     # remove intra-cell flows
     # this is for example oceanic sinking flux, which is dealt with
     # by "betr_ocean_sinkflux" in "processes.py".
-    for [k,v] in fdict.items():
+    for [k,v] in list(fdict.items()):
         intercell=list(where(v[:,0]!=v[:,1])[0])
         intracell=list(where(v[:,0]==v[:,1])[0])
         fdict[k]=v[intercell,:]
@@ -132,9 +132,9 @@ def mkflowQ(m):
         col1.append(x)
         col2.append(y)
     
-    for [kk,vv] in fdict.items():
+    for [kk,vv] in list(fdict.items()):
         if len(vv)==0: continue
-        for [k,v] in Qdict.items():
+        for [k,v] in list(Qdict.items()):
             if (kk[0]-1)==k:
                nv=zeros((len(v),14))           
                for ii in range(len(v)):
@@ -188,16 +188,16 @@ def mkflowmat(m):
     '''takes a model object (m) as argument and returns a list of sparse
     matrices which contain D-values from inter-cell flows for each timestep.'''
     fdict=copy.deepcopy(m.Dflow)
-    for tp in fdict.keys(): # check whether we have all compartments
+    for tp in list(fdict.keys()): # check whether we have all compartments
         for c in tp:
-            if c not in m.compdict.keys():
-                print('''flows.py: Compartment %i not in compartment-list.
-                Aborting !''') % (c)
+            if c not in list(m.compdict.keys()):
+                print(('''flows.py: Compartment %i not in compartment-list.
+                Aborting !''') % (c))
                 sys.exit(1)
     # remove intra-cell flows
     # this is for example oceanic sinking flux, which is dealt with
     # by "betr_ocean_sinkflux" in "processes.py".
-    for [k,v] in fdict.items():
+    for [k,v] in list(fdict.items()):
         intercell=list(where(v[:,0]!=v[:,1])[0])
         intracell=list(where(v[:,0]==v[:,1])[0])
         fdict[k]=v[intercell,:]
@@ -206,7 +206,7 @@ def mkflowmat(m):
     for t in arange(0,m.nots):
         matlist.append(sp.coo_matrix(matrix(zeros((m.matdim,m.matdim),
                                                   dtype=float32))))  # original: float64 
-    for [k,v] in fdict.items():
+    for [k,v] in list(fdict.items()):
         if len(v)==0: continue        
         toidx=array([(x-1)*m.nocomp+k[1]-1 for x in v[:,1]])
         fromidx=array([(x-1)*m.nocomp+k[0]-1 for x in v[:,0]])
@@ -222,16 +222,16 @@ def mkflowmatQ(m):
     '''Return a list of sparse
     matrices which contain D-values with Q from inter-cell flows for each timestep.'''
     fdict=mkflowQ(m)
-    for tp in fdict.keys(): # check whether we have all compartments
+    for tp in list(fdict.keys()): # check whether we have all compartments
         for c in tp:
-            if c not in m.compdict.keys():
-                print('''flows.py: Compartment %i not in compartment-list.
-                Aborting !''') % (c)
+            if c not in list(m.compdict.keys()):
+                print(('''flows.py: Compartment %i not in compartment-list.
+                Aborting !''') % (c))
                 sys.exit(1)
     # remove intra-cell flows
     # this is for example oceanic sinking flux, which is dealt with
     # by "betr_ocean_sinkflux" in "processes.py".
-    for [k,v] in fdict.items():
+    for [k,v] in list(fdict.items()):
         intercell=list(where(v[:,0]!=v[:,1])[0])
         intracell=list(where(v[:,0]==v[:,1])[0])
         fdict[k]=v[intercell,:]
@@ -241,7 +241,7 @@ def mkflowmatQ(m):
     for t in arange(0,m.nots):
         matlist.append(sp.coo_matrix(matrix(zeros((m.matdim,m.matdim),
                                                   dtype=float32))))  # original: float64 
-    for [k,v] in fdict.items():
+    for [k,v] in list(fdict.items()):
         if len(v)==0: continue
         toidx=array([(x-1)*m.nocomp+k[1]-1 for x in v[:,1]])
         fromidx=array([(x-1)*m.nocomp+k[0]-1 for x in v[:,0]])
@@ -321,7 +321,7 @@ def mkZVinv(m):
     # construct list of large sparse matrices
     mlist=[]
     diags=zeros((m.nots,m.matdim))
-    for c in m.compdict.keys():
+    for c in list(m.compdict.keys()):
         idx=tocell(arange(1, m.nocells+1),c,m)
         d=m.zdict[c]['bulk']*m.vdict[c]['bulk']    
         for t in arange(0,m.nots):

@@ -31,8 +31,8 @@ class Zvalues():
         empty=[]
         for i in arange(0,len(compdict)):
             empty.append({})
-        self.Z=dict(zip(self.compdict.keys(), empty))       
-        for c in self.compdict.keys():
+        self.Z=dict(list(zip(list(self.compdict.keys()), empty)))       
+        for c in list(self.compdict.keys()):
             try:
                 self.Z[c]=getattr(self,'Z'+str(c))()
             except AttributeError:

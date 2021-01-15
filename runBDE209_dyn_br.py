@@ -2,7 +2,8 @@
 import os
 import time
 import BETRS
-reload(BETRS)
+import importlib
+importlib.reload(BETRS)
 from BETRS import *
 import pdb
 
@@ -31,7 +32,7 @@ dname = os.path.dirname(abspath)
 os.chdir(dname)
 
 runID = ['BDE209_dyn_br'] # output names 
-years = [range(1970,2051)]*len(runID)    # range of modeling run (years)
+years = [list(range(1970,2051))]*len(runID)    # range of modeling run (years)
 
 emisdir = ['Emission_BDE209_10_comparts']  # emission inventory ('Emissions/annual/')
 #emisfile = ['emissions_dyn_GenNL_br.txt']*len(runID) # emission inventory ('Emissions/')
@@ -57,9 +58,9 @@ for v in [years, emisdir, seasparfile, chemdata, chemnr, constparfile, compfile,
 ## now run the model
 
 for i in range(0, len(runID)):
-    print('\n\nStarting run ' + runID[i])
+    print(('\n\nStarting run ' + runID[i]))
     ## model first year and write temporary result to text file
-    print('\n\nBETR run ' + runID[i] + ' for year ' + str(years[i][0]))
+    print(('\n\nBETR run ' + runID[i] + ' for year ' + str(years[i][0])))
     m=Model(chemical = chemnr[i],
             run = runID[i],
             chemdb = chemdata[i],
@@ -89,7 +90,7 @@ for i in range(0, len(runID)):
     ## model year 2 to n
     for y in years[i][1:]:
         del(m)
-        print('\n\nBETR run ' + runID[i] + ' for year ' + str(y))
+        print(('\n\nBETR run ' + runID[i] + ' for year ' + str(y)))
         m=Model(chemical = chemnr[i], 
             run = runID[i],
             chemdb = chemdata[i],
@@ -130,6 +131,6 @@ for i in range(0, len(runID)):
 
     t_e = time.time() # End time
 
-    print 'Simulation completed!'
-    print runID
-    print 'TOTAL SIMULATION TIME: %f minutes = %f hours.' % ( (t_e - t_s) / 60.0 , (t_e - t_s) / 3600.0 )
+    print('Simulation completed!')
+    print(runID)
+    print('TOTAL SIMULATION TIME: %f minutes = %f hours.' % ( (t_e - t_s) / 60.0 , (t_e - t_s) / 3600.0 ))

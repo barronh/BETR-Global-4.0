@@ -24,23 +24,23 @@ def mkflowDQ(m):       #Fy   15.08.2016
     Kloss=zeros((comp,cells,seasons))    #  Fy  20.09.2016
                
     ''' uses zdict and vdict to construct vz'''
-    for c in m.compdict.keys():
+    for c in list(m.compdict.keys()):
         vz[c-1]=m.zdict[c]['bulk']*m.vdict[c]['bulk']
         
     '''use Dflow and Dprocess to construct Dtotalloss'''
     '''Dflow'''
     fdict=copy.deepcopy(m.Dflow)
-    for [k,v] in fdict.items():
+    for [k,v] in list(fdict.items()):
         intercell=list(where(v[:,0]!=v[:,1])[0])
         intracell=list(where(v[:,0]==v[:,1])[0])
         fdict[k]=v[intercell,:]
         
     T=[]
     Q=[]
-    for [k,v] in fdict.items():
+    for [k,v] in list(fdict.items()):
         T.append([])
         Q.append([])
-    for [k,v] in fdict.items():
+    for [k,v] in list(fdict.items()):
         if k[0]==4 and k[1]==5: continue
         c=k[0]-1
         T[c]=zeros((len(v),len(v[0])))
@@ -55,7 +55,7 @@ def mkflowDQ(m):       #Fy   15.08.2016
                    T[c][i][(2+ii)]=vz[c][a][ii]/v[i][(2+ii)]
 
     '''Dprocess'''  
-    for [k,v] in m.Dproc.items():
+    for [k,v] in list(m.Dproc.items()):
         key=k[0]-1
         mstring = k[2]
         if re.search("deg|wet|disso", mstring): 
@@ -76,7 +76,7 @@ def mkflowDQ(m):       #Fy   15.08.2016
                 
    
     '''calcuate Q, here we only calculate upper air and lower air, Q1,Q2'''
-    for [k,v] in fdict.items():
+    for [k,v] in list(fdict.items()):
         c=k[0]-1
         for ii in range(len(T[c])):
             b=T[c][ii][0]-1
@@ -99,18 +99,18 @@ def mkDQnocells(m):       #Fy   15.08.2016
     Q=zeros((comp,cells,seasons))
                
     ''' uses zdict and vdict to construct vz'''
-    for c in m.compdict.keys():
+    for c in list(m.compdict.keys()):
         vz[c-1]=m.zdict[c]['bulk']*m.vdict[c]['bulk']
         
     '''use Dflow and Dprocess to construct Dtotalloss'''
     '''Dflow'''
     fdict=copy.deepcopy(m.Dflow)
-    for [k,v] in fdict.items():
+    for [k,v] in list(fdict.items()):
         intercell=list(where(v[:,0]!=v[:,1])[0])
         intracell=list(where(v[:,0]==v[:,1])[0])
         fdict[k]=v[intercell,:]
         
-    for [k,v] in fdict.items():
+    for [k,v] in list(fdict.items()):
         mdf=zeros((comp,len(v[:,0]),14))
         if k[0]==4 and k[1]==5: continue
         c=k[0]-1
@@ -130,7 +130,7 @@ def mkDQnocells(m):       #Fy   15.08.2016
 
 
     '''Dprocess'''
-    for [k,v] in m.Dproc.items():
+    for [k,v] in list(m.Dproc.items()):
         key=k[0]-1
         if key==0: dk[0]+=v
         if key==1: dk[1]+=v

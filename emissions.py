@@ -22,7 +22,7 @@ class Emission:
         try:
             f=open(fn, 'r')
         except IOError:
-            print("emissions.py: emission file %s not found. Aborting!") % (fn)
+            print(("emissions.py: emission file %s not found. Aborting!") % (fn))
             sys.exit(1)
         lines=f.readlines()
         f.close

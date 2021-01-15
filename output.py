@@ -9,7 +9,7 @@ from numpy import *
 import sys
 import os
 import csv
-import cPickle
+import pickle
 import pdb
 #import write_ncfile
 #reload(write_ncfile)
@@ -29,9 +29,9 @@ def write_cpk_file(fn, out):
         os.mkdir(os.path.dirname(fncpk))
     else:
         if os.path.exists(fncpk):
-            print('Attention: overwriting %s\n') % (fncpk)
+            print(('Attention: overwriting %s\n') % (fncpk))
     f=open(fncpk,'w')
-    cPickle.dump(out,f)
+    pickle.dump(out,f)
     f.close()
 
 def write_output_summary(m, fn, nchemical, nrun, nchemdb, nseasonalparfile, nconstantparfile,\
@@ -63,9 +63,9 @@ def write_output_ss(m, fn, units, netcdf, cpk):     # parameter cpk added by HW
     nlat=int(sqrt(m.matdim/m.nocomp/2))                  # added by HW
     nlon=int(sqrt(m.matdim/m.nocomp/2)*2)                # added by HW
     out={}
-    for c in m.compdict.keys():
+    for c in list(m.compdict.keys()):
         out[c]={}
-        idx=arange(c-1,m.matdim,len(m.compdict.keys()))
+        idx=arange(c-1,m.matdim,len(list(m.compdict.keys())))
         ## deal with zero-volumes / Z-values
         varr=mean(m.vdict[c]['bulk'],axis=1)
         zv_arr=mean(m.zdict[c]['bulk'],axis=1)*varr
@@ -102,18 +102,18 @@ def write_output_ss(m, fn, units, netcdf, cpk):     # parameter cpk added by HW
             #os.mkdir(os.path.dirname(fncpk))
         #else:
         if os.path.exists(fncpk):
-            print('Attention: overwriting %s\n') % (fncpk)
-        f=open(fncpk,'w')
-        cPickle.dump(out,f)
+            print(('Attention: overwriting %s\n') % (fncpk))
+        f=open(fncpk,'wb')
+        pickle.dump(out,f)
         f.close()
     if netcdf:
         for u in units:
             fnnc=fn+'_'+u+'.nc'
             if os.path.exists(fnnc):
-                print('Attention: overwriting %s\n') % (fnnc)
+                print(('Attention: overwriting %s\n') % (fnnc))
             #outarray=zeros((m.nocomp,nlon,nlat)) #12,24
             outarray=zeros((m.nocomp,nlat,nlon)) #12,24 # Modified by RKG, 28.07.2014
-            for c in m.compdict.keys():
+            for c in list(m.compdict.keys()):
                 #outarray[c-1,:,:]=out[c][u].reshape(nlon,nlat) #12,24
                 outarray[c-1,:,:]=out[c][u].reshape(nlat,nlon) #12,24 # Modified by RKG, 28.07.2014
             writenc(outarray,fnnc,False,True,1,varname='V',unit=u)
@@ -130,9 +130,9 @@ def write_output_dyn(m, fn, units, netcdf, cpk):     # parameter cpk added by HW
     if periods != (timesteps-1)/float(m.nots):
         sys.exit('timesteps of output {0:d} not multiple of '
                  +'seasons ({1:d}): Aborting !'.format(timesteps,m.nots))
-    for c in m.compdict.keys():
+    for c in list(m.compdict.keys()):
         out[c]={}
-        idx=arange(c-1,m.matdim,len(m.compdict.keys()))
+        idx=arange(c-1,m.matdim,len(list(m.compdict.keys())))
         ## deal with zero volumes / Z-values
         varr=hstack((ones((idx.shape[0],1)),
                      tile(m.vdict[c]['bulk'], (1,periods))))
@@ -172,17 +172,17 @@ def write_output_dyn(m, fn, units, netcdf, cpk):     # parameter cpk added by HW
             #os.mkdir(os.path.dirname(fncpk))
         #else:
         if os.path.exists(fncpk):
-            print('Attention: overwriting %s\n') % (fncpk)
-        f=open(fncpk,'w')
-        cPickle.dump(out,f)
+            print(('Attention: overwriting %s\n') % (fncpk))
+        f=open(fncpk,'wb')
+        pickle.dump(out,f)
         f.close()
     if netcdf:
         for u in units:
             fnnc=fn+'_'+u+'.nc'
             if os.path.exists(fnnc):
-                print('Attention: overwriting %s\n') % (fnnc)
+                print(('Attention: overwriting %s\n') % (fnnc))
             outarray=zeros((timesteps,m.nocomp,nlat,nlon))# 12,24
-            for c in m.compdict.keys():
+            for c in list(m.compdict.keys()):
                 for t in arange(0,timesteps):
                     outarray[t,c-1,:,:]=out[c][u][:,t].reshape(nlat,nlon) #12,24
             writenc(outarray, fnnc, True, True, 1, varname='V',unit=u)
@@ -210,9 +210,9 @@ def write_output_se(m, fn, units, netcdf, cpk, scenario="air"):     # parameter 
     if periods != (timesteps-1)/float(m.nots):
         sys.exit('timesteps of output {0:d} not multiple of '
                  +'seasons ({1:d}): Aborting !'.format(timesteps,m.nots))
-    for c in m.compdict.keys():
+    for c in list(m.compdict.keys()):
         out[c]={}
-        idx=arange(c-1,m.matdim,len(m.compdict.keys()))
+        idx=arange(c-1,m.matdim,len(list(m.compdict.keys())))
         ## deal with zero volumes / Z-values
         varr=hstack((ones((idx.shape[0],1)),
                      tile(m.vdict[c]['bulk'], (1,periods))))
@@ -240,27 +240,29 @@ def write_output_se(m, fn, units, netcdf, cpk, scenario="air"):     # parameter 
             #os.mkdir(os.path.dirname(fncpk))
         #else:
         if os.path.exists(fncpk):
-            print('Attention: overwriting %s\n') % (fncpk)
+            print(('Attention: overwriting %s\n') % (fncpk))
         f=open(fncpk,'w')
-        cPickle.dump(out,f)
+        pickle.dump(out,f)
         f.close()
     if netcdf:
         for u in units:
             fnnc=fn+'_'+u+'.nc'
             if os.path.exists(fnnc):
-                print('Attention: overwriting %s\n') % (fnnc)
+                print(('Attention: overwriting %s\n') % (fnnc))
             outarray=zeros((timesteps,m.nocomp,nlat,nlon))# 12,24
-            for c in m.compdict.keys():
+            for c in list(m.compdict.keys()):
                 for t in arange(0,timesteps):
                     outarray[t,c-1,:,:]=out[c][u][:,t].reshape(nlat,nlon) #12,24
             writenc(outarray, fnnc, True, True, 1, varname='V',unit=u)
             
             
 def write_output_dyn_tmp(m, fn, timesteps):                             # function added by HW
-    nreg=m.matdim/m.nocomp    
+    # Newer versions of numpy cannot use floats for shapes
+    # the division here creates a float
+    nreg=int(m.matdim/m.nocomp)
     out_tmp = zeros([nreg*m.nocomp, 3])#288*7
-    out_tmp[:, 0] = tile(range(1, nreg+1), m.nocomp)#289
-    out_tmp[:, 1] = repeat(range(1, m.nocomp+1), nreg)#288
+    out_tmp[:, 0] = tile(list(range(1, nreg+1)), m.nocomp)#289
+    out_tmp[:, 1] = repeat(list(range(1, m.nocomp+1)), nreg)#288
     
     #timesteps=m.dyn_res.shape[1]
     periods=int((timesteps-1)/float(m.nots))
@@ -268,8 +270,8 @@ def write_output_dyn_tmp(m, fn, timesteps):                             # functi
         sys.exit('timesteps of output {0:d} not multiple of '
                  +'seasons ({1:d}): Aborting !'.format(timesteps,m.nots))
     
-    for c in m.compdict.keys():
-        idx=arange(c-1,m.matdim,len(m.compdict.keys()))
+    for c in list(m.compdict.keys()):
+        idx=arange(c-1,m.matdim,len(list(m.compdict.keys())))
         ## deal with zero volumes / Z-values
         varr=hstack((ones((idx.shape[0],1)),
                      tile(m.vdict[c]['bulk'], (1,periods))))
@@ -286,10 +288,12 @@ def write_output_dyn_tmp(m, fn, timesteps):                             # functi
     
     
 def write_output_end_txt(m, fn, timesteps):                             # function added by HW
-    nreg=m.matdim/m.nocomp
+    # Newer versions of numpy cannot use floats for shapes
+    # the division here creates a float
+    nreg=int(m.matdim/m.nocomp)
     out_tmp = zeros([nreg*m.nocomp, 3])#288*7
-    out_tmp[:, 0] = tile(range(1, nreg+1), m.nocomp)#289
-    out_tmp[:, 1] = repeat(range(1, m.nocomp+1), nreg)#288
+    out_tmp[:, 0] = tile(list(range(1, nreg+1)), m.nocomp)#289
+    out_tmp[:, 1] = repeat(list(range(1, m.nocomp+1)), nreg)#288
     
     #timesteps = m.dyn_res.shape[1]    
     periods=int((timesteps-1)/float(m.nots))
@@ -297,8 +301,8 @@ def write_output_end_txt(m, fn, timesteps):                             # functi
         sys.exit('timesteps of output {0:d} not multiple of '
                  +'seasons ({1:d}): Aborting !'.format(timesteps,m.nots))
     
-    for c in m.compdict.keys():
-        idx=arange(c-1,m.matdim,len(m.compdict.keys()))
+    for c in list(m.compdict.keys()):
+        idx=arange(c-1,m.matdim,len(list(m.compdict.keys())))
         ## deal with zero volumes / Z-values
         varr=hstack((ones((idx.shape[0],1)),
                      tile(m.vdict[c]['bulk'], (1,periods))))
@@ -314,10 +318,12 @@ def write_output_end_txt(m, fn, timesteps):                             # functi
     savetxt(fn, out_tmp, fmt = ['%i', '%i', '%.16e'], delimiter=' ')   # changed from .8e to .16e
 
 def write_output_ss_txt(m, fn):                             # function added by RKG, 04.01.2014
-    nreg=m.matdim/m.nocomp
+    # Newer versions of numpy cannot use floats for shapes
+    # the division here creates a float
+    nreg=int(m.matdim/m.nocomp)
     out_tmp = zeros([nreg*m.nocomp, 3])#288*7
-    out_tmp[:, 0] = tile(range(1, nreg+1), m.nocomp)#289
-    out_tmp[:, 1] = repeat(range(1, m.nocomp+1), nreg)#288
+    out_tmp[:, 0] = tile(list(range(1, nreg+1)), m.nocomp)#289
+    out_tmp[:, 1] = repeat(list(range(1, m.nocomp+1)), nreg)#288
     
     #timesteps = m.dyn_res.shape[1]    
     #periods=int((timesteps-1)/float(m.nots))
@@ -325,8 +331,8 @@ def write_output_ss_txt(m, fn):                             # function added by 
     #    sys.exit('timesteps of output {0:d} not multiple of '
     #             +'seasons ({1:d}): Aborting !'.format(timesteps,m.nots))
     
-    for c in m.compdict.keys():
-        idx=arange(c-1,m.matdim,len(m.compdict.keys()))
+    for c in list(m.compdict.keys()):
+        idx=arange(c-1,m.matdim,len(list(m.compdict.keys())))
         ## deal with zero volumes / Z-values
     #    varr=hstack((ones((idx.shape[0],1)),
     #                 tile(m.vdict[c]['bulk'], (1,periods))))
@@ -343,40 +349,42 @@ def write_output_ss_txt(m, fn):                             # function added by 
 
     
 def write_bigDlist_txt(bigDlist, fn2, fn3,fn4, fn5,m):             # function added by HW, and modified by FY
-    nreg=m.matdim/m.nocomp
+    # Newer versions of numpy cannot use floats for shapes
+    # the division here creates a float
+    nreg=int(m.matdim/m.nocomp)
     #dtypeDlist = [('regfrom', int), ('compfrom', int), ('regto', int), ('compto', int), 
                       #(str(1), float), (str(2), float), (str(3), float), (str(4), float), (str(5), float), (str(6), float),
                       #(str(7), float), (str(8), float), (str(9), float), (str(10), float), (str(11), float), (str(12), float)]
     Dflow = zeros((7*nreg*nreg, 16))   #7 means numbers of compartments, see the line starting with Dflow[:,range(0,4)] 
-    fromreg = hstack([sort(range(1,nreg+1)*nreg)]*7)
-    toreg = hstack([range(1,nreg+1)*nreg]*7)
-    Dflow[:,range(0,4)] = transpose([fromreg,
+    fromreg = hstack([sort(list(range(1,nreg+1))*nreg)]*7)
+    toreg = hstack([list(range(1,nreg+1))*nreg]*7)
+    Dflow[:,list(range(0,4))] = transpose([fromreg,
                                      hstack([[1]*nreg*nreg, [2]*nreg*nreg, [4]*nreg*nreg, [5]*nreg*nreg, [7]*nreg*nreg, [8]*nreg*nreg, [9]*nreg*nreg]),
                                      toreg,
                                      hstack([[1]*nreg*nreg, [2]*nreg*nreg, [4]*nreg*nreg, [5]*nreg*nreg, [7]*nreg*nreg, [8]*nreg*nreg, [9]*nreg*nreg])])
     Dflow = Dflow[Dflow[:,0] != Dflow[:,2], :]
     for month in range(0,12):
         Dflow[:,month + 4] = bigDlist[month][tocell(Dflow[:,2], Dflow[:,3], m), tocell(Dflow[:,0], Dflow[:,1], m)]
-    Dflow = Dflow[findnonemptycells(Dflow[:, range(4,16)]), :]
+    Dflow = Dflow[findnonemptycells(Dflow[:, list(range(4,16))]), :]
     
     Ddiag = zeros((m.nocomp*nreg, 16))
-    fromreg = sort(range(1,nreg+1)*m.nocomp)
-    fromcomp = range(1,m.nocomp+1)*nreg
-    Ddiag[:,range(0,4)] = transpose([fromreg, fromcomp, fromreg, fromcomp])
+    fromreg = sort(list(range(1,nreg+1))*m.nocomp)
+    fromcomp = list(range(1,m.nocomp+1))*nreg
+    Ddiag[:,list(range(0,4))] = transpose([fromreg, fromcomp, fromreg, fromcomp])
     for month in range(0,12):
         Ddiag[:,month + 4] = bigDlist[month][tocell(Ddiag[:,2], Ddiag[:,3], m), tocell(Ddiag[:,0], Ddiag[:,1], m)]
-    Ddiag = Ddiag[findnonemptycells(Ddiag[:, range(4,16)]), :]
+    Ddiag = Ddiag[findnonemptycells(Ddiag[:, list(range(4,16))]), :]
     
     Dint = zeros((nreg*m.nocomp*m.nocomp, 16))
-    fromreg = sort(range(1,nreg+1)*m.nocomp*m.nocomp)
-    fromcomp = hstack([sort(range(1,m.nocomp+1)*m.nocomp)]*nreg)
-    tocomp = range(1,m.nocomp+1)*m.nocomp*nreg
-    Dint[:,range(0,4)] = transpose([fromreg, fromcomp, fromreg, tocomp])
+    fromreg = sort(list(range(1,nreg+1))*m.nocomp*m.nocomp)
+    fromcomp = hstack([sort(list(range(1,m.nocomp+1))*m.nocomp)]*nreg)
+    tocomp = list(range(1,m.nocomp+1))*m.nocomp*nreg
+    Dint[:,list(range(0,4))] = transpose([fromreg, fromcomp, fromreg, tocomp])
     Dint = Dint[Dint[:,1] != Dint[:,3],:]
     Dint = Dint[Dint[:,0] == Dint[:,2],:]   # unneccesary
     for month in range(0,12):
         Dint[:,month + 4] = bigDlist[month][tocell(Dint[:,2], Dint[:,3], m), tocell(Dint[:,0], Dint[:,1], m)]
-    Dint = Dint[findnonemptycells(Dint[:, range(4,16)]), :]
+    Dint = Dint[findnonemptycells(Dint[:, list(range(4,16))]), :]
     
     bigDlist2 = vstack([Dflow, Ddiag, Dint])
     '''
@@ -435,14 +443,14 @@ def write_output_dflux(m,fn,netcdf=False,units=['mol'],nlat=12,nlon=24):
 #    possiblefiles = ["flow", "airwater", "deg", "sed", "dep_air", "dep_water"]
     
     out = mk_allfluxes(m)
-    k = out.keys()[0]
+    k = list(out.keys())[0]
     timesteps=len(out[k])
     write_cpk_file(fn, out)
     if netcdf:
-        for u in out.keys():
+        for u in list(out.keys()):
             fnnc=fn+'_'+u+'.nc'
             if os.path.exists(fnnc):
-                print('Attention: overwriting %s\n') % (fnnc)
+                print(('Attention: overwriting %s\n') % (fnnc))
             outarray=zeros((timesteps,1,nlat,nlon))
             for t in arange(0,timesteps):
                     outarray[t,0,:,:]=out[u][t].reshape(nlat,nlon)
@@ -489,7 +497,7 @@ def mk_allfluxes(m, nseasons=12):
         season = ts % nseasons
         year = ts / nseasons
         if season ==0:
-            print ("Processing year %i \t" %(year)),
+            print(("Processing year %i \t" %(year)), end=' ')
         
         fluxmat = m.flux_res[ts]
         x,y = fluxmat.nonzero()
@@ -505,8 +513,8 @@ def mk_allfluxes(m, nseasons=12):
                     match_dict = m.flux_key[season][xcell][xcomp]
                     #print 'match_dict', match_dict
                 except KeyError:
-                    print [[season],[xcell],[xcomp]]
-                for mnkey in match_dict.keys():
+                    print([[season],[xcell],[xcomp]])
+                for mnkey in list(match_dict.keys()):
                     
                     if type(mnkey) is tuple:                             
                         if xcomp in [0]:
@@ -615,11 +623,11 @@ def mk_allfluxes(m, nseasons=12):
                                           /(fluxdict["flow_out_lower_caerosol"][ts][i]+fluxdict["lower_caerosol_to_all"][ts][i]\
                                             +fluxdict["lower_caerosol_sed"][ts][i]+fluxdict["lower_caerosol_deg"][ts][i])
                     
-        print ("."),
+        print(("."), end=' ')
         if season == (nseasons-1):
-            print('  [%.3f s]')  % (time.time()-ts1)
+            print(('  [%.3f s]')  % (time.time()-ts1))
             ts1=time.time()        
-    print ("Time in mk_allfluxes(): %.3f min " % ((time.time()-ts0)/60.))
+    print(("Time in mk_allfluxes(): %.3f min " % ((time.time()-ts0)/60.)))
     return fluxdict        
                       
                           

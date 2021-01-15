@@ -129,7 +129,7 @@ class Solver:
         ts0=time.time()
         
         for m in range(0, ts):
-            print('Integrating month # %s') % (m)
+            print(('Integrating month # %s') % (m))
             #ig.set_initial_value(ig.y, ig.t)
             
             current_season = mod(m, self.steps_per_period)
@@ -159,8 +159,8 @@ class Solver:
                 Diff_upper = (dot(self.model.bigDlist[current_season],
                                                     diags(self.y0, 0))
                                                     * substeplength)
-                print('\tSeason %d\t %d substeps of length %.5f hours')\
-                            % (current_season,no_sub_steps, substeplength)
+                print(('\tSeason %d\t %d substeps of length %.5f hours')\
+                            % (current_season,no_sub_steps, substeplength))
                                    
             elif with_deriv and exp_t_steps:
                 substeplist= (10.**(1./10.))**arange(1,11)
@@ -172,22 +172,22 @@ class Solver:
                                                     diags(self.y0, 0))
                                                     * substeplist[0])
                 no_sub_steps=len(substeplist)                                                   
-                print('\tSeason %d\t %d substeps of length %.5f to %.5f hours')\
+                print(('\tSeason %d\t %d substeps of length %.5f to %.5f hours')\
                             % (
                                current_season,
                                no_sub_steps,
                                substeplist[0],
                                substeplist[-1],
-                               )                                                    
+                               ))                                                    
                 
             else:    
                 substeplength = self.stepdef[current_season] / no_sub_steps
 
-                print('\tSeason %d\t %d substeps of length %.5f hours')\
-                            % (current_season,no_sub_steps, substeplength)
+                print(('\tSeason %d\t %d substeps of length %.5f hours')\
+                            % (current_season,no_sub_steps, substeplength))
             te1=time.time()
             ts1=time.time()
-            print('\tIntegrating %i substeps: ' % no_sub_steps),
+            print(('\tIntegrating %i substeps: ' % no_sub_steps), end=' ')
             for i in range(0, no_sub_steps):
 
                 ig.integrate(ig.t + substeplength)
@@ -221,9 +221,9 @@ class Solver:
                     sys.exit("Integration failed; aborting !")
                 te1=time.time()
                 if no_sub_steps > 1:
-                    if i % (no_sub_steps/20) == 0: print('.'),
+                    if i % (no_sub_steps/20) == 0: print(('.'), end=' ')
             
-            print('\n done with month %d  [%.3f s]')  % (m, (te1-ts1))
+            print(('\n done with month %d  [%.3f s]')  % (m, (te1-ts1)))
             
             
             if track_flow:
@@ -256,7 +256,7 @@ class Solver:
                 res=vstack((res, ig.y))
             """Stop timer"""
             te0=time.time()
-        print "time elapsed: %f minutes" % ((te0-ts0)/60.0)
+        print("time elapsed: %f minutes" % ((te0-ts0)/60.0))
         res=res.T
         if track_flow:
             return res, flux_res
@@ -298,7 +298,7 @@ or set use_odespy=false
         
         '''Cycle through months m'''
         for m in range(0, ts):
-            print('Integrating month # %s') % (m)
+            print(('Integrating month # %s') % (m))
             current_season = mod(m, self.steps_per_period)
             current_matrix_csr = self.model.bigDlist[current_season]
             current_emissions = self.model.emission.get_emission(m,self.model)
@@ -317,11 +317,11 @@ or set use_odespy=false
             solver.set_initial_condition(current_y)
             no_sub_steps = 1
             substeplength = self.stepdef[current_season] 
-            print('\tSeason %d\t %d substeps of length %.5f hours')\
-                            % (current_season,no_sub_steps, substeplength)
+            print(('\tSeason %d\t %d substeps of length %.5f hours')\
+                            % (current_season,no_sub_steps, substeplength))
             te1=time.time()
             ts1=time.time()
-            print('\tIntegrating %i substeps: ' % no_sub_steps),
+            print(('\tIntegrating %i substeps: ' % no_sub_steps), end=' ')
             
             '''NOTE: Check if loopng over substeps cam be avoided (should always be 1 step) '''
             for i in range(0, no_sub_steps):
@@ -330,7 +330,7 @@ or set use_odespy=false
                 t=t[1]    
                 te1=time.time()
             
-            print('\n done with month %d  [%.3f s]')  % (m, (te1-ts1))
+            print(('\n done with month %d  [%.3f s]')  % (m, (te1-ts1)))
             
             
             if track_flow:
@@ -349,7 +349,7 @@ or set use_odespy=false
             """Stop timer"""
             te0=time.time()
 
-        print "time elapsed: %f minutes" % ((te0-ts0)/60.0)
+        print("time elapsed: %f minutes" % ((te0-ts0)/60.0))
         res=res.T
         
         if track_flow:

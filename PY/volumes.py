@@ -27,8 +27,8 @@ class Volumes():
         empty=[]
         for i in arange(0,len(compdict)):
             empty.append({})
-        self.V=dict(zip(self.compdict.keys(), empty))
-        for c in self.compdict.keys():
+        self.V=dict(list(zip(list(self.compdict.keys()), empty)))
+        for c in list(self.compdict.keys()):
             try:
                 self.V[c]=getattr(self,'V'+str(c))()
             except AttributeError:

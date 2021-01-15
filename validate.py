@@ -21,13 +21,14 @@ subdirectoy "vbaresults".
 from numpy import *
 import sys
 from scipy import sparse
-import cPickle
+import pickle
 import subprocess
 import os
 import shutil
 from pylab import *
 import BETRS
-reload(BETRS)
+import importlib
+importlib.reload(BETRS)
 from BETRS import *
 import helpers
 
@@ -43,11 +44,11 @@ import helpers
 def validate(level, chemicals):
     print('Validating BETR-Research for chemicals')
     print(chemicals)
-    print('at level {0:.3e}'.format(level))
+    print(('at level {0:.3e}'.format(level)))
     valid=True
     difflist=[]
     for chem in chemicals:
-        print('Calculating system matrices for chemical %d') % (chem)
+        print(('Calculating system matrices for chemical %d') % (chem))
         m=Model(chem,controlfile='control_validation.txt')
         shutil.copy(os.path.join('Output','default','matrixdump.cpk'),
                 os.path.join('Validation'))
@@ -55,7 +56,7 @@ def validate(level, chemicals):
         ## load BETRS-output
         fn=os.path.join('Output','default','matrixdump.cpk')
         f=open(fn,'r')
-        Dmatpy=cPickle.load(f)
+        Dmatpy=pickle.load(f)
         f.close()
 
         ## load BETR-VBA output
@@ -66,7 +67,7 @@ def validate(level, chemicals):
             sys.exit('Did not find the file {0:s}. Aborting !'.format(fnvba))
 
         for mo in arange(0,12):
-            print('comparing substance %s, month %i') % (chem,mo+1)
+            print(('comparing substance %s, month %i') % (chem,mo+1))
             Dres=Dmatpy[mo]
             ## get empty volume elements
             killidx=findemptycells(Dres)
@@ -101,10 +102,10 @@ def validate(level, chemicals):
             diff1=where(logical_and(Dres==0, Dvba!=0))
             diff2=where(logical_and(Dres!=0, Dvba==0))
             if diff1[0].size > 0 or diff2[0].size > 0:
-                print('Validation failed ! There are zeros in one matrix that'\
-                      +' are non-zero in the other:')
-                print('research == 0, vba != 0: {0:s}'.format(diff1))
-                print('research != 0, vba == 0: {0:s}'.format(diff2))
+                print(('Validation failed ! There are zeros in one matrix that'\
+                      +' are non-zero in the other:'))
+                print(('research == 0, vba != 0: {0:s}'.format(diff1)))
+                print(('research != 0, vba == 0: {0:s}'.format(diff2)))
                 valid=False
             else:
                 print('Test for equality of sparsity pattern: passed.')
@@ -116,23 +117,23 @@ def validate(level, chemicals):
             fromc=list(cell2regcomp(s1[1],m)[1])
             toc=list(cell2regcomp(s1[0],m)[1])
             cells=list(cell2regcomp(s1[0],m)[0])
-            ft=zip(fromc,toc)
+            ft=list(zip(fromc,toc))
             diffdict={}
             for i in enumerate(ft):
-                if diffdict.has_key(i[1]):
+                if i[1] in diffdict:
                     diffdict[i[1]].append(cells[i[0]])
                 else:
                     diffdict[i[1]]=[cells[i[0]]]
             if bool(diffdict):
-                print('Validation not passed, relative differences > {0:.3e}'\
-                      +' occured :'.format(level))
+                print(('Validation not passed, relative differences > {0:.3e}'\
+                      +' occured :'.format(level)))
                 print(diffdict)
                 print('erroneous from-to:')
-                print(unique(ft))
+                print((unique(ft)))
                 valid=False
             else:
-                print('Matices equal within rtol={0:.3e}'.format(level))
-    print(60*'*')
+                print(('Matices equal within rtol={0:.3e}'.format(level)))
+    print((60*'*'))
     if valid:
         print('Overall validation: PASSED')
     else:

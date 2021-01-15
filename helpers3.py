@@ -17,10 +17,10 @@ def normalizefluxkey(flux_key):
         for ii in range(len(flux_key[i])):
             for iii in range(len(flux_key[i][ii])):
                 fsum=0.0
-                for key in flux_key[i][ii][iii].keys():
+                for key in list(flux_key[i][ii][iii].keys()):
                     fsum += flux_key[i][ii][iii][key]
                 if fsum !=0.0:
-                    for key in flux_key[i][ii][iii].keys():
+                    for key in list(flux_key[i][ii][iii].keys()):
                         flux_key[i][ii][iii][key] = flux_key[i][ii][iii][key]/fsum
     return flux_key
                     

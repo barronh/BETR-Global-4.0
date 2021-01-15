@@ -7,7 +7,6 @@ This module reads and batters into shape the input parameters'''
 ################################################################################
 from numpy import *
 import os
-import string
 import inspect
 import glob
 import csv
@@ -33,7 +32,7 @@ def _readEnvironment(partype, fn):
         line_old=line
         line=f.readline()
         c=line[0]
-    header=string.split(line_old)
+    header=str.split(line_old)
     header[0]=header[0].lstrip("#")
     f.close()
     if partype == 'const':    
@@ -59,7 +58,7 @@ def _readEnvironment(partype, fn):
         ## 1) increasing cell number and 2) increasing timestep
         pars=sort(pars, axis=0, order=['CELL','TS'])
         fields=list(pars.dtype.names)
-        fields=filter(lambda x: x!='CELL' and x!='TS', fields)
+        fields=[x for x in fields if x!='CELL' and x!='TS']
         pars=pars[fields]
         pars=reshape(pars,(cells, ts))
     return(pars)
@@ -96,17 +95,17 @@ def readCompartments(fn):
         line=f.readline()
         if line[0] == "#":
             continue
-        header=string.split(line)
+        header=str.split(line)
         del(header[0])
         break
     while True:
         line=f.readline()
         if line == '': break
         if line[0] =='#' or line == '\n': continue
-        line=string.split(line)
+        line=str.split(line)
         num=line[0]
         del line[0]
-        compdict[int(num)] = dict(zip(header,line))
+        compdict[int(num)] = dict(list(zip(header,line)))
     return(compdict)
 
 def readFlows(complist, flowdir):
@@ -155,7 +154,7 @@ def readChemicals(chemlist, fn):
         line=f.readline()
         c=line[0]
         count+=1
-    header=string.split(line_old)
+    header=str.split(line_old)
     header[0]=header[0].lstrip("#")
     f.seek(0)
     # jump over comments
@@ -185,7 +184,7 @@ def readProcesses(compdict, fn):
         if line[0] == '#' or line == '\n': continue
         line=line.split()
         comps=[int(x) for x in line[1:]]
-        if all([x in compdict.keys() for x in comps]):
+        if all([x in list(compdict.keys()) for x in comps]):
             pl=[line[0]]
             pl.extend(comps)
             proclist.append(tuple(pl))
